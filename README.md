@@ -1,6 +1,6 @@
 Welcome to our group's Github!
 
-# RumorDetection(written by English)
+# RumorDetection(written in English)
 A project based on NLP and machine learning, aiming to identify rumors in social media.
 # Rumor Detection
 
