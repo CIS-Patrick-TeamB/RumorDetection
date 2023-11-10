@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
 
 '''
 @article{song2018ced,
@@ -12,8 +7,6 @@ This is a temporary script file.
   journal={arXiv preprint arXiv:1811.04175},
   year={2018}
 '''
-
-
 
 import zipfile
 import os
@@ -31,6 +24,7 @@ import pandas as pd
 
 
 # 解压原始数据集，将Rumor_Dataset.zip解压至data目录下
+# Unzip the original dataset and extract it to the target directory
 src_path = "C:/Users/杨思博/Downloads/Rumor_Dataset.zip"  # 这里填写自己项目所在的数据集路径
 target_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master"
 if (not os.path.isdir(target_path)):
@@ -39,6 +33,7 @@ if (not os.path.isdir(target_path)):
     z.close()
 
 # 分别为谣言数据、非谣言数据、全部数据的文件路径
+# Define paths for rumor 、non-rumor and original_data datasets
 rumor_class_dirs = os.listdir(
     os.path.join(target_path, "C:/users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/rumor-repost"))
 # 这里填写自己项目所在的数据集路径
@@ -56,7 +51,7 @@ all_rumor_list = []
 all_non_rumor_list = []
 
 
-# 解析谣言数据  all_data.txt
+# 解析谣言数据 analyse rumor 
 for rumor_class_dir in rumor_class_dirs:
     if not rumor_class_dir.endswith('.DS_Store'):
         # 遍历谣言数据，并解析
@@ -66,7 +61,7 @@ for rumor_class_dir in rumor_class_dirs:
         rumor_dict = json.loads(rumor_content)
         all_rumor_list.append(rumor_label + "\t" + rumor_dict["text"] + "\n")
         rumor_num += 1
-# 解析非谣言数据
+# 解析非谣言数据 analyse non_rumor
 for non_rumor_class_dir in non_rumor_class_dirs:
     if not non_rumor_class_dir.endswith('.DS_Store'):
         file_path = os.path.join(original_microblog, non_rumor_class_dir)
@@ -76,10 +71,11 @@ for non_rumor_class_dir in non_rumor_class_dirs:
         all_non_rumor_list.append(non_rumor_label + "\t" + non_rumor_dict["text"] + "\n")
         non_rumor_num += 1
 
-print("谣言数据总量为：" + str(rumor_num))
-print("非谣言数据总量为：" + str(non_rumor_num))
+print("The total amount of rumor data ：" + str(rumor_num))
+print("The total amount of non_rumor data：" + str(non_rumor_num))
 
 # 全部数据进行乱序后写入all_data.txt
+# Shuffle and write all_data.txt
 data_list_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/"
 
 
@@ -96,10 +92,11 @@ with open(all_data_path, 'w',encoding='utf-8') as f:
 with open(all_data_path, 'a',encoding='utf-8') as f:
     for data in all_data_list:
         f.write(data)
-print('all_data.txt已生成')
+print('all_data.txt generated!')
 
 
 # 生成数据字典  dict.txt
+# generate the dict.txt
 
 def create_dict(data_path, dict_path, dict_xlsx_path):
     dict_set = set()
@@ -107,11 +104,13 @@ def create_dict(data_path, dict_path, dict_xlsx_path):
     with open(data_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     # 把数据生成一个元组
+    # Convert data into a tuple
     for line in lines:
         content = line.split('\t')[-1].replace('\n', '')
         for s in content:
             dict_set.add(s)
     # 把元组转换成字典，一个字对应一个数字
+    # Convert the tuple into a dictionary, where each character corresponds to a number
     dict_list = []
     i = 0
     for s in dict_set:
@@ -124,15 +123,18 @@ def create_dict(data_path, dict_path, dict_xlsx_path):
     # 把这些字典保存到本地中
     with open(dict_path, 'w', encoding='utf-8') as f:
         f.write(str(dict_txt))
-    print("数据字典生成完成！", '\t', '字典长度为：', len(dict_list))
+    print("Data dictionary generation completed！", '\t', 'The Length of this data dictionary：', len(dict_list))
 
-    # 将字典转换为DataFrame
+    
+    # Convert the dictionary to a DataFrame
     df = pd.DataFrame(dict_list, columns=['single word', 'times'])
-    # 将DataFrame写入Excel表格
+   
+    # Write the DataFrame to an Excel sheet
+
     writer = pd.ExcelWriter(dict_xlsx_path)
     df.to_excel(writer, index=False)
     writer._save()
-    print("数字字典.xlsx生成完成！")
+    print("Data dictionary.xlsx generation completed！")
 
 data_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/all_data.txt"
 dict_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/your_dict_file.txt"
@@ -140,8 +142,9 @@ dict_xlsx_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Da
 create_dict(data_path, dict_path, dict_xlsx_path)
 
 
-# 创建序列化表示的数据,并按照一定比例划分训练数据与验证数据
-# 这段代码的作用是将原始数据处理成用于文本分类模型训练和评估的数据列表，最终生成了两个文件：eval_list.txt 用于评估，train_list.txt 用于训练。
+# Create serialized representation of data and split into training and evaluation sets
+# The purpose of this code is to process raw data into data lists for training and  evaluation of text classification models.
+# There are TWO file generated：eval_list.txt is for evalution，train_list.txt is foe training。
 def create_data_list(data_list_path):
     # 打开包含字典数据的文件，读取并解析成字典
     with open(os.path.join(data_list_path, 'dict.txt'), 'r', encoding='utf-8') as f_data:
@@ -180,15 +183,19 @@ def create_data_list(data_list_path):
                 f_train.write(t_ids)
             i += 1
 
-    print("数据列表生成完成！")
+    print("Data list generation completed.")
 
 data_list_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/"
 create_data_list(data_list_path)
 
 
 # 这段代码定义了一个数据读取器函数 data_reader，用于从指定文件中读取数据并返回一个数据生成器函数。
-# 生成器函数会逐行读取文件中的数据，将文本内容和标签解析后返回。如果指定了 shuffle 参数并且 phrase 为 "train"，则会在训练数据中对数据进行洗牌。
-# 这个数据读取器可以用于加载文本分类任务的训练和评估数据。
+# 生成器函数会逐行读取文件中的数据，将文本内容和标签解析后返回。如果指定了 shuffle 参数并且 phrase 为 "train"，则会在训练数据中对数据进行洗牌， 这个数据读取器可以用于加载文本分类任务的训练和评估数据。
+
+# This code defines a data reader function, data_reader, to read data from a specified file and return a data generator function.
+# The generator function reads data line by line from the file, parses text content and labels, and returns them. 
+# If the shuffle parameter is specified and the phrase is "train", the data is shuffled for training.
+# This data reader can be used to load training and evaluation data for text classification tasks.
 def data_reader(file_path, phrase, shuffle=False):
     # 初始化一个空列表用于存储数据
     all_data = []
@@ -224,9 +231,10 @@ def data_reader(file_path, phrase, shuffle=False):
     return reader
 
 file_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/train_list.txt"
-phrase = "train"  # 或 "eval"，表示数据集是训练集还是评估集
-shuffle = True  # 是否对训练数据进行洗牌
+phrase = "train"  # or "eval", indicating whether the dataset is for training or evaluation  或 "eval"，表示数据集是训练集还是评估集
+shuffle = True  # hether to shuffle the training data  是否对训练数据进行洗牌
 
 # 调用数据读取器函数，返回一个数据生成器
+# Call the data reader function, returning a data generator
 data_generator = data_reader(file_path, phrase, shuffle)
 
