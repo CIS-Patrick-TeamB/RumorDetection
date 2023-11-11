@@ -97,49 +97,42 @@ print('all_data.txt generated!')
 
 # 生成数据字典  dict.txt
 # generate the dict.txt
+
 def create_dict(data_path, dict_path, dict_xlsx_path):
-    dict_set = set()
-    # 读取全部数据
+    dict_count = {}
+    
     with open(data_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
-    # 把数据生成一个元组
-    # Convert data into a tuple
+    
+    # occurences
     for line in lines:
         content = line.split('\t')[-1].replace('\n', '')
         for s in content:
-            dict_set.add(s)
-    # 把元组转换成字典，一个字对应一个数字
-    # Convert the tuple into a dictionary, where each character corresponds to a number
-    dict_list = []
-    i = 0
-    for s in dict_set:
-        dict_list.append([s, i])
-        i += 1
-    # 添加未知字符
-    dict_txt = dict(dict_list)
-    end_dict = {"<unk>": i}
-    dict_txt.update(end_dict)
-    # 把这些字典保存到本地中
-    with open(dict_path, 'w', encoding='utf-8') as f:
-        f.write(str(dict_txt))
-    print("Data dictionary generation completed！", '\t', 'The Length of this data dictionary：', len(dict_list))
-
+            if s in dict_count:
+                dict_count[s] += 1
+            else:
+                dict_count[s] = 1
     
-    # Convert the dictionary to a DataFrame
-    df = pd.DataFrame(dict_list, columns=['single word', 'times'])
-   
-    # Write the DataFrame to an Excel sheet
+    # 把这些字符及其出现次数保存到本地
+    with open(dict_path, 'w', encoding='utf-8') as f:
+        f.write(str(dict_count))
+    
+    print("Data dictionary generation completed！", '\t', 'The length of the dictionary：', len(dict_count))
 
+    # turn it into DataFrame
+    df = pd.DataFrame(list(dict_count.items()), columns=['character', 'occurrences'])
+    
+    # turn DataFrame into Excel
     writer = pd.ExcelWriter(dict_xlsx_path)
     df.to_excel(writer, index=False)
     writer._save()
+    
     print("Data dictionary.xlsx generation completed！")
 
 data_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/all_data.txt"
 dict_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/your_dict_file.txt"
 dict_xlsx_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/dict.xlsx"
 create_dict(data_path, dict_path, dict_xlsx_path)
-
 
 # Create serialized representation of data and split into training and evaluation sets
 # The purpose of this code is to process raw data into data lists for training and  evaluation of text classification models.
