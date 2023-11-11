@@ -97,7 +97,6 @@ print('all_data.txt generated!')
 
 # 生成数据字典  dict.txt
 # generate the dict.txt
-
 def create_dict(data_path, dict_path, dict_xlsx_path):
     dict_set = set()
     # 读取全部数据
@@ -146,16 +145,16 @@ create_dict(data_path, dict_path, dict_xlsx_path)
 # The purpose of this code is to process raw data into data lists for training and  evaluation of text classification models.
 # There are TWO file generated：eval_list.txt is for evalution，train_list.txt is foe training。
 def create_data_list(data_list_path):
-    # 打开包含字典数据的文件，读取并解析成字典
+   
+    # Open the file containing dictionary data, read it, and parse it into a dictionary.
     with open(os.path.join(data_list_path, 'dict.txt'), 'r', encoding='utf-8') as f_data:
         dict_txt = eval(f_data.readlines()[0])
-
-    # 打开包含所有数据的文件，读取每行数据
+    # Open the file containing all the data, read each line of data.
     with open(os.path.join(data_list_path, 'all_data.txt'), 'r', encoding='utf-8') as f_data:
         lines = f_data.readlines()
 
     i = 0
-    # 创建用于写入评估数据的文件和训练数据的文件
+    # Create files for writing evaluation data and training data.
     with open(os.path.join(data_list_path, 'eval_list.txt'), 'a', encoding='utf-8') as f_eval, \
             open(os.path.join(data_list_path, 'train_list.txt'), 'a', encoding='utf-8') as f_train:
         # 遍历所有数据行
@@ -164,9 +163,9 @@ def create_data_list(data_list_path):
             title = line.split('\t')[-1].replace('\n', '')
             lab = line.split('\t')[0]
             t_ids = ""
-            # 每8行数据将用于评估，其余用于训练
+            # Every 8 lines of data will be used for evaluation, and the rest will be used for training.
             if i % 8 == 0:
-                # 将标题文本转换为字典中的相应编号并拼接成字符串
+                # Convert the title text to the corresponding number in the dictionary and concatenate it into a string.
                 for s in title:
                     temp = str(dict_txt[s])
                     t_ids = t_ids + temp + ','
@@ -174,7 +173,7 @@ def create_data_list(data_list_path):
                 t_ids = t_ids[:-1] + '\t' + lab + '\n'
                 f_eval.write(t_ids)
             else:
-                # 同样将标题文本转换为字典中的相应编号并拼接成字符串
+                # Similarly, convert the title text to the corresponding number in the dictionary and concatenate it into a string.
                 for s in title:
                     temp = str(dict_txt[s])
                     t_ids = t_ids + temp + ','
@@ -189,8 +188,6 @@ data_list_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Da
 create_data_list(data_list_path)
 
 
-# 这段代码定义了一个数据读取器函数 data_reader，用于从指定文件中读取数据并返回一个数据生成器函数。
-# 生成器函数会逐行读取文件中的数据，将文本内容和标签解析后返回。如果指定了 shuffle 参数并且 phrase 为 "train"，则会在训练数据中对数据进行洗牌， 这个数据读取器可以用于加载文本分类任务的训练和评估数据。
 
 # This code defines a data reader function, data_reader, to read data from a specified file and return a data generator function.
 # The generator function reads data line by line from the file, parses text content and labels, and returns them. 
@@ -213,7 +210,7 @@ def data_reader(file_path, phrase, shuffle=False):
 
             # 分割文本内容，将第一列数据按逗号分隔并存储为列表
             wids = cols[0].split(",")
-            # 将文本内容和标签组成一个元组，添加到数据列表中
+            # Combine the text content and label into a tuple and add it to the list of data.
             all_data.append((wids, label))
 
     # 如果需要对数据进行洗牌（shuffle）
