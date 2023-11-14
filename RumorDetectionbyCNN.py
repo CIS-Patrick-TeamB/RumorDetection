@@ -25,8 +25,8 @@ import pandas as pd
 
 # 解压原始数据集，将Rumor_Dataset.zip解压至data目录下
 # Unzip the original dataset and extract it to the target directory
-src_path = "C:/Users/杨思博/Downloads/Rumor_Dataset.zip"  # 这里填写自己项目所在的数据集路径
-target_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master"
+src_path = "C:/Users/杨思博/Downloads/Rumor_Dataset.zip"  # 这里填写自己数据集的zip文件所在的路径
+target_path = "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master" # zip解压后，Chinese_Rumor_Dataset-master文件夹所在地
 if (not os.path.isdir(target_path)):
     z = zipfile.ZipFile(src_path, 'r')
     z.extractall(path=target_path)
@@ -35,10 +35,10 @@ if (not os.path.isdir(target_path)):
 # 分别为谣言数据、非谣言数据、全部数据的文件路径
 # Define paths for rumor 、non-rumor and original_data datasets
 rumor_class_dirs = os.listdir(
-    os.path.join(target_path, "C:/users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/rumor-repost"))
-# 这里填写自己项目所在的数据集路径
-non_rumor_class_dirs = os.listdir(os.path.join(target_path, "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/non-rumor-repost"))
-original_microblog = os.path.join(target_path, "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/original-microblog")
+    os.path.join(target_path, "C:/users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/rumor-repost"))# rumor-repost的路径
+
+non_rumor_class_dirs = os.listdir(os.path.join(target_path, "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/non-rumor-repost"))# non-rumor-repost的路径
+original_microblog = os.path.join(target_path, "C:/Users/杨思博/Desktop/Chinese_Rumor_Dataset-master/CED_Dataset/original-microblog")# original-microblog的路径
 
 # 谣言标签为0，非谣言标签为1
 rumor_label = "0"
